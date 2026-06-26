@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:8000"
+// src/lib/api.js
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 export async function searchPlaces({ query, lat, lng }) {
   const response = await fetch(`${BASE_URL}/places/search`, {
@@ -66,24 +67,23 @@ export async function deletePlan(planId) {
   return response.json()
 }
 
-// Envía un mensaje al chat de IA
 export async function sendChatMessage({ userId, message, plans }) {
-    const response = await fetch(`${BASE_URL}/chat/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mensaje: message,           // ← era message
-        userId,
-        planes: plans.map(p => ({
-          nombre:    p.name    ?? p.nombre,     // acepta ambos formatos
-          direccion: p.address ?? p.direccion,
-          rating:    p.rating,
-        })),
-      }),
-    })
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
-      throw new Error(error.detail ?? "Error al enviar el mensaje")
-    }
-    return response.json()
+  const response = await fetch(`${BASE_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mensaje: message,
+      userId,
+      planes: plans.map(p => ({
+        nombre:    p.name    ?? p.nombre,
+        direccion: p.address ?? p.direccion,
+        rating:    p.rating,
+      })),
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}))
+    throw new Error(error.detail ?? "Error al enviar el mensaje")
   }
+  return response.json()
+}
