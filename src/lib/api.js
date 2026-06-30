@@ -22,6 +22,7 @@ export async function searchPlaces({ query, lat, lng }) {
       photo:   p.photo_url ?? p.photo,
       lat:     p.latitude  ?? p.lat,
       lng:     p.longitude ?? p.lng,
+      category: p.category ?? null,
     }))
   }
 }
@@ -38,6 +39,7 @@ export async function savePlan({ userId, place }) {
       longitude: place.lng,
       rating:    place.rating,
       photo_url: place.photo ?? null,
+      category: place.category ?? null,
     }),
   })
   if (!response.ok) {

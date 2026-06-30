@@ -1,13 +1,17 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { AdvancedMarker, InfoWindow, useAdvancedMarkerRef } from "@vis.gl/react-google-maps"
 import { Button } from "@/components/ui/button"
 import { Star, BookmarkPlus, Check } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
-// Pin SVG personalizado — cambia de color según si está guardado
-function MapPin({ saved }) {
-  const color = saved ? "#10b981" : "#ef4444" // emerald-500 o red-500
+function MapPin({ saved, onMouseEnter, onMouseLeave }) {
+  const color = saved ? "#10b981" : "#ef4444"
   return (
-    <div style={{ transform: "translate(-50%, -100%)", cursor: "pointer" }}>
+    <div
+      style={{ transform: "translate(-50%, -100%)", cursor: "pointer" }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <svg width="32" height="40" viewBox="0 0 32 40" fill="none">
         <path
           d="M16 0C7.163 0 0 7.163 0 16c0 10 16 24 16 24S32 26 32 16C32 7.163 24.837 0 16 0z"
@@ -20,13 +24,35 @@ function MapPin({ saved }) {
 }
 
 export default function PlaceMarker({ place, onSave, savedPlaceNames = [] }) {
-  const [open, setOpen]       = useState(false)
-  const [saving, setSaving]   = useState(false)
+  const [open, setOpen]           = useState(false)
+  const [saving, setSaving]       = useState(false)
   const [justSaved, setJustSaved] = useState(false)
-  const [markerRef, marker]   = useAdvancedMarkerRef()
+  const [markerRef, marker]       = useAdvancedMarkerRef()
+  const closeTimer                = useRef(null)
 
   const alreadySaved = savedPlaceNames.includes(place.name)
   const isSaved      = alreadySaved || justSaved
+
+  // Abre el popup — cancela cualquier cierre pendiente
+  function handleMouseEnter() {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+
+  // Cierra con delay — da tiempo a mover el mouse al popup
+  function handleMouseLeave() {
+    closeTimer.current = setTimeout(() => setOpen(false), 300)
+  }
+
+  // Cuando el mouse entra al popup — cancela el cierre
+  function handlePopupEnter() {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+  }
+
+  // Cuando el mouse sale del popup — cierra
+  function handlePopupLeave() {
+    closeTimer.current = setTimeout(() => setOpen(false), 300)
+  }
 
   async function handleSave() {
     setSaving(true)
@@ -45,17 +71,29 @@ export default function PlaceMarker({ place, onSave, savedPlaceNames = [] }) {
       <AdvancedMarker
         ref={markerRef}
         position={{ lat: place.lat, lng: place.lng }}
-        onClick={() => setOpen(true)}
         title={place.name}
       >
-        {/* El pin cambia de color reactivamente con isSaved */}
-        <MapPin saved={isSaved} />
+        <MapPin
+          saved={isSaved}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
       </AdvancedMarker>
 
       {open && (
-        <InfoWindow anchor={marker} onCloseClick={() => setOpen(false)} maxWidth={260}>
-          <div className="flex flex-col gap-2 p-1">
-
+        <InfoWindow
+          anchor={marker}
+          onCloseClick={() => setOpen(false)}
+          maxWidth={260}
+          // Cancela cierre cuando el mouse está sobre el popup
+          onMouseEnter={handlePopupEnter}
+          onMouseLeave={handlePopupLeave}
+        >
+          <div
+            className="flex flex-col gap-2 p-1"
+            onMouseEnter={handlePopupEnter}
+            onMouseLeave={handlePopupLeave}
+          >
             {place.photo && (
               <img src={place.photo} alt={place.name}
                 className="w-full h-32 object-cover rounded-lg" />
@@ -66,20 +104,31 @@ export default function PlaceMarker({ place, onSave, savedPlaceNames = [] }) {
             </p>
 
             {place.address && (
-              <p className="text-xs text-slate-500 leading-tight">{place.address}</p>
+              <p className="text-xs text-slate-500 leading-tight">
+                {place.address}
+              </p>
             )}
 
             {place.rating && (
               <div className="flex items-center gap-1">
                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <span className="text-xs font-medium text-slate-700">{place.rating}</span>
+                <span className="text-xs font-medium text-slate-700">
+                  {place.rating}
+                </span>
               </div>
+            )}
+            {place.category && (
+              <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full w-fit">
+                {place.category}
+              </span>
             )}
 
             <Button
               size="sm"
-              className={`w-full mt-1 transition-colors ${
-                isSaved ? "bg-emerald-500 hover:bg-emerald-500 text-white cursor-default" : ""
+              className={`w-full mt-1 transition-colors cursor-pointer ${
+                isSaved
+                  ? "bg-emerald-500 hover:bg-emerald-500 text-white cursor-default"
+                  : ""
               }`}
               disabled={saving || isSaved}
               onClick={handleSave}
@@ -92,7 +141,6 @@ export default function PlaceMarker({ place, onSave, savedPlaceNames = [] }) {
                 <><BookmarkPlus className="w-3 h-3 mr-1" />Guardar en mi plan</>
               )}
             </Button>
-
           </div>
         </InfoWindow>
       )}

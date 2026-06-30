@@ -13,7 +13,7 @@ export default function MarkerFilter({ showPlans, showResults, onChange, onClear
       {/* Ver todos */}
       <button
         onClick={() => onChange({ showPlans: true, showResults: true })}
-        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+        className={`px-3 py-1.5 cursor-pointer rounded-lg text-xs font-medium transition-colors ${
           bothActive
             ? "bg-slate-800 text-white"
             : "text-slate-500 hover:bg-slate-50"
@@ -27,7 +27,7 @@ export default function MarkerFilter({ showPlans, showResults, onChange, onClear
       {/* Toggle Mis planes */}
       <button
         onClick={() => onChange({ showPlans: !showPlans, showResults })}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
+        className={`flex items-center cursor-pointer gap-1.5 px-3 py-1.5 rounded-lg text-xs
                     font-medium transition-colors ${
           showPlans && !bothActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
@@ -44,7 +44,7 @@ export default function MarkerFilter({ showPlans, showResults, onChange, onClear
       <button
         onClick={() => onChange({ showPlans, showResults: !showResults })}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
-                    font-medium transition-colors ${
+                    font-medium transition-colors cursor-pointer ${
           showResults && !bothActive
             ? "bg-red-50 text-red-700 border border-red-200"
             : showResults
@@ -62,7 +62,7 @@ export default function MarkerFilter({ showPlans, showResults, onChange, onClear
       <button
         onClick={onClear}
         className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs
-                   text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                   text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer"
         title="Limpiar búsqueda"
       >
         <X className="w-3.5 h-3.5" />

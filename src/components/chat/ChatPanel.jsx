@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 const INITIAL_MESSAGE = {
   id: 1,
   role: "assistant",
-  content: "¡Hola! Soy tu asistente de Plannery. Guarda algunos lugares en tu plan y te ayudo a organizar tu salida perfecta 🗺️"
+  content: "¡Hola! Soy tu asistente de Plannery. Dime tu presupuesto, lo que quieres hacer y te ayudo a organizar tu salida perfecta 🗺️"
 }
 
 function ChatMessage({ message }) {
@@ -26,7 +26,7 @@ function ChatMessage({ message }) {
           ? "bg-slate-800 text-white rounded-tr-sm"
           : "bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm"
       )}>
-        {message.content}
+        <div dangerouslySetInnerHTML={{ __html: message.content }} />
       </div>
     </div>
   )
@@ -140,20 +140,10 @@ export default function ChatPanel({ user, plans, open, onClose }) {
             </p>
           </div>
         </div>
-        <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+        <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
           <X className="w-4 h-4" />
         </button>
       </div>
-
-      {!hasPlans && (
-        <div className="mx-3 mt-3 bg-amber-50 border border-amber-200
-                        rounded-xl px-3 py-2 flex gap-2 items-start shrink-0">
-          <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700 leading-relaxed">
-            Primero guarda algunos lugares en tu plan para que pueda recomendarte.
-          </p>
-        </div>
-      )}
 
       {/* Mensajes con scroll */}
       <div className="flex-1 overflow-y-auto min-h-0 px-3 py-3">
@@ -171,16 +161,16 @@ export default function ChatPanel({ user, plans, open, onClose }) {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={hasPlans ? "Escribe un mensaje..." : "Guarda lugares primero..."}
-          disabled={!hasPlans || typing}
+          placeholder={"Escribe un mensaje..." }
+          disabled={typing}
           rows={1}
           className="flex-1 resize-none border border-slate-200 rounded-xl
                      px-3 py-2 text-sm outline-none focus:ring-2
                      focus:ring-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <Button size="icon" onClick={handleSend}
-          disabled={!hasPlans || !input.trim() || typing}
-          className="shrink-0 rounded-xl">
+          disabled={!input.trim() || typing}
+          className="shrink-0 rounded-xl cursor-pointer">
           <Send className="w-4 h-4" />
         </Button>
       </div>

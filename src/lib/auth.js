@@ -17,6 +17,11 @@ export async function loginWithGoogle() {
 
 export async function logout() {
   try {
+    // Borra el historial del chat del localStorage antes de cerrar sesión
+    const user = auth.currentUser
+    if (user) {
+      localStorage.removeItem(`chat_${user.uid}`)
+    }
     await signOut(auth)
   } catch (error) {
     console.error("Error al cerrar sesión:", error.message)

@@ -1,12 +1,23 @@
 import { Button } from "@/components/ui/button"
 import { Trash2, Star, MapPin } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function PlansList({ plans, loading, onDelete }) {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-400 text-sm">
-        Cargando planes...
+      <div className="flex flex-col gap-3 flex-1">
+        {[1,2,3,4].map(i => (
+          <div key={i} className="rounded-xl overflow-hidden border border-slate-100 bg-white">
+            <Skeleton className="w-full h-24" />
+            <div className="p-3 flex flex-col gap-2">
+              <Skeleton className="h-3 w-3/4 rounded-full" />
+              <Skeleton className="h-3 w-1/2 rounded-full" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
@@ -46,19 +57,21 @@ export default function PlansList({ plans, loading, onDelete }) {
             <div className="flex items-center justify-between mt-1">
               {/* Rating más visible */}
               {plan.rating ? (
-                <div className="flex items-center gap-1 bg-yellow-50
-                                border border-yellow-200 rounded-full px-2 py-0.5">
+                <Badge className="gap-1 bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-50">
                   <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xs font-semibold text-yellow-700">
                     {plan.rating}
-                  </span>
-                </div>
+                </Badge>
               ) : <span />}
+              {plan.category && (
+                <Badge variant="secondary" className="w-fit text-xs">
+                  {plan.category}
+                </Badge>
+              )}
 
               <Button variant="ghost" size="icon"
                 className="h-7 w-7 text-slate-400 hover:text-red-500"
                 onClick={() => onDelete(plan.id)}>
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3.5 h-3.5 cursor-pointer" />
               </Button>
             </div>
           </div>
