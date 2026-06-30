@@ -262,7 +262,7 @@ export default function PlansPage({ user, plans, onSave, onDeletePlan, mapCenter
               <div className="col-span-full flex flex-col items-center
                               justify-center gap-3 py-20 text-slate-400">
                 <p className="text-4xl">🔍</p>
-                <p className="text-sm">No hay lugares para las categorías seleccionadas</p>
+                <p className="text-sm">No hay ninguna categoria seleccionada</p>
               </div>
             )}
           </div>
